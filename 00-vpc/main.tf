@@ -8,6 +8,7 @@ module "vpc" {
 
     is_peering_required = true
 }
-output "vpc_ids" {
-    value =module.vpc.public_subnet_ids
-}
+
+/* output "vpc_ids" {
+    value = module.vpc.public_subnet_ids
+} */
