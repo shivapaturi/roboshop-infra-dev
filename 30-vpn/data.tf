@@ -4,7 +4,7 @@ data "aws_ami" "openvpn" {
 
   filter {
     name   = "name"
-    values = ["OpenVPN Access Server Community Image-fe8020db-5343-*"]
+    values = ["OpenVPN Access Server Community  Image-3b5882c4-551b-*"]
   }
 
   filter {
