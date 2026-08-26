@@ -1,10 +1,10 @@
 data "aws_ami" "openvpn" {
-  owners           = ["679593333241"]
-  most_recent      = true
+    most_recent = true
+    owners      = ["679593333241"]
 
   filter {
     name   = "name"
-    values = ["OpenVPN Access Server Community Image-fe8020db-5343-4c43-*"]
+    values = ["OpenVPN Access Server Community Image-8fbe3379-*"]
   }
 
   filter {
@@ -16,7 +16,7 @@ data "aws_ami" "openvpn" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-}
+}  
 
 data "aws_ssm_parameter" "vpn_sg_id" {
   name = "/${var.project}/${var.environment}/vpn_sg_id"

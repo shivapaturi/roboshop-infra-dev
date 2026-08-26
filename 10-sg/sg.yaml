@@ -1,21 +1,25 @@
 - name: Roboshop SG and Rules
+
   security_groups:
   - DB:
     - mongodb
     - redis
     - mysql
     - rabbitmq
+
   - APP:
     - catalogue
     - user
     - cart
     - shipping
     - payment
+
   - BACKEND_ALB:
   - FRONTEND:
   - FRONTEND_ALB:
   - VPN:
   - BASTION:
+  
   mongodb:
   - name: mongodb_vpn
     purpose: mongodb should accept traffic on 22,27017 from vpn
