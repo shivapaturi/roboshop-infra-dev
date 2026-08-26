@@ -139,14 +139,14 @@ resource "aws_autoscaling_group" "catalogue" {
   }
 
   dynamic "tag" {
-    for each = merge(
+    for_each = merge (
       local.common_tags,
       {
         Name = "${var.project}-${var.environment}-catalogue"
       }
     )
     content {
-      key                 = tag.name
+      key                 = tag.key
       value               = tag.value
       propagate_at_launch = true
     }
@@ -161,9 +161,8 @@ resource "aws_autoscaling_group" "catalogue" {
     }
     triggers = ["launch_template"]
   }
-  timeout{
-    create = "15min"
-    delete = "15min"
+  timeouts{
+      delete = "15min"
   }
 }
 
@@ -182,7 +181,7 @@ resource "aws_autoscaling_policy" "catalogue" {
 }
 
 resource "aws_lb_listener_rule" "catalogue" {
-  listener_arn = local.backend_alb_listner_arn
+  listener_arn = local.backend_alb_listener_arn
   priority     = 10
 
   action {
