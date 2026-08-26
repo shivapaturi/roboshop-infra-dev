@@ -97,8 +97,8 @@ module "backend_alb" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
     project = var.project
+    environment = var.environment
     
-    enable_deletion_protection = false
     sg_name = "backend_alb"
     sg_description = "for backend alb"
     vpc_id = local.vpc_id
@@ -600,7 +600,7 @@ resource "aws_security_group_rule" "vpn_943" {
   security_group_id = module.vpn.sg_id
 }
 
-# backend ALB accepting connections from my bastion host on port no 80
+#backend ALB accepting connections from my bastion host on port no 80
 # resource "aws_security_group_rule" "backend_alb_bastion" {
 #   type              = "ingress"
 #   from_port         = 80
