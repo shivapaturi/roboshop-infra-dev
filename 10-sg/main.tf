@@ -97,8 +97,8 @@ module "backend_alb" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
     project = var.project
-    environment = var.environment
-
+    
+    enable_deletion_protection = false
     sg_name = "backend_alb"
     sg_description = "for backend alb"
     vpc_id = local.vpc_id
