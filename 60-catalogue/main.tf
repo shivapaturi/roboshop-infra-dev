@@ -79,7 +79,7 @@ resource "aws_ami_from_instance" "catalogue" {
 
   # make sure you have aws configure in your laptop
   provisioner "local-exec" {
-    command = "aws ec2 terminate-instances --instances-ids ${aws_instance.catalogue.id}"
+    command = "aws ec2 terminate-instances --instance-ids ${aws_instance.catalogue.id}"
   }
   depends_on = [aws_ami_from_instance.catalogue]
 } 
@@ -190,7 +190,7 @@ resource "aws_lb_listener_rule" "catalogue" {
   }
 
   condition {
-    path_pattern {
+    host_header {
       values = ["catalogue.backend-${var.environment}-${var.zone_name}"]
     }
   }
