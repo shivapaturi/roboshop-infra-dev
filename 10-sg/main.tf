@@ -52,6 +52,7 @@ module "catalogue" {
     sg_description = "for catalogue"
     vpc_id = local.vpc_id
 }
+
 module "user" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -62,6 +63,7 @@ module "user" {
     sg_description = "for user"
     vpc_id = local.vpc_id
 }
+
 module "cart" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -83,6 +85,7 @@ module "shipping" {
     sg_description = "for shipping"
     vpc_id = local.vpc_id
 }
+
 module "payment" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -93,6 +96,7 @@ module "payment" {
     sg_description = "for payment"
     vpc_id = local.vpc_id
 }
+
 module "backend_alb" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -103,6 +107,7 @@ module "backend_alb" {
     sg_description = "for backend alb"
     vpc_id = local.vpc_id
 }
+
 module "frontend" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -113,6 +118,7 @@ module "frontend" {
     sg_description = var.frontend_sg_description
     vpc_id = local.vpc_id
 }
+
 module "frontend_alb" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -123,6 +129,7 @@ module "frontend_alb" {
     sg_description = "for frontend alb"
     vpc_id = local.vpc_id
 }
+
 module "bastion" {
     #source = "../../terraform-aws-securitygroup"
     source = "git::https://github.com/shivapaturi/terraform-aws-securitygroup.git?ref=main"
@@ -156,6 +163,7 @@ resource "aws_security_group_rule" "mongodb_vpn" {
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.mongodb.sg_id
 }
+
 resource "aws_security_group_rule" "mongodb_bastion" {
   count = length(var.mongodb_ports_vpn)
   type              = "ingress"
@@ -165,6 +173,7 @@ resource "aws_security_group_rule" "mongodb_bastion" {
   source_security_group_id = module.bastion.sg_id
   security_group_id = module.mongodb.sg_id
 }
+
 resource "aws_security_group_rule" "mongodb_catalogue" {
   type                     = "ingress"
   from_port                = 27017
@@ -173,6 +182,7 @@ resource "aws_security_group_rule" "mongodb_catalogue" {
   source_security_group_id = module.catalogue.sg_id
   security_group_id        = module.mongodb.sg_id
 }
+
 resource "aws_security_group_rule" "mongodb_user" {
   type                     = "ingress"
   from_port                = 27017
@@ -181,6 +191,7 @@ resource "aws_security_group_rule" "mongodb_user" {
   source_security_group_id = module.user.sg_id
   security_group_id        = module.mongodb.sg_id
 }
+
 # Redis
 resource "aws_security_group_rule" "redis_vpn" {
   count = length(var.redis_ports_vpn)
@@ -191,6 +202,7 @@ resource "aws_security_group_rule" "redis_vpn" {
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.redis.sg_id
 }
+
 resource "aws_security_group_rule" "redis_bastion" {
   count = length(var.redis_ports_vpn)
   type              = "ingress"
@@ -200,6 +212,7 @@ resource "aws_security_group_rule" "redis_bastion" {
   source_security_group_id = module.bastion.sg_id
   security_group_id = module.redis.sg_id
 }
+
 resource "aws_security_group_rule" "redis_user" {
   type              = "ingress"
   from_port         = 6379
@@ -208,6 +221,7 @@ resource "aws_security_group_rule" "redis_user" {
   source_security_group_id = module.user.sg_id
   security_group_id = module.redis.sg_id
 }
+
 resource "aws_security_group_rule" "redis_cart" {
   type              = "ingress"
   from_port         = 6379
@@ -216,6 +230,7 @@ resource "aws_security_group_rule" "redis_cart" {
   source_security_group_id = module.cart.sg_id
   security_group_id = module.redis.sg_id
 }
+
 # MYSQL
 resource "aws_security_group_rule" "mysql_vpn" {
   count = length(var.mysql_ports_vpn)
@@ -226,6 +241,7 @@ resource "aws_security_group_rule" "mysql_vpn" {
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.mysql.sg_id
 }
+
 resource "aws_security_group_rule" "mysql_bastion" {
   count = length(var.mysql_ports_vpn)
   type              = "ingress"
@@ -235,6 +251,7 @@ resource "aws_security_group_rule" "mysql_bastion" {
   source_security_group_id = module.bastion.sg_id
   security_group_id = module.mysql.sg_id
 }
+
 resource "aws_security_group_rule" "mysql_shipping" {
   type              = "ingress"
   from_port         = 3306
@@ -243,6 +260,7 @@ resource "aws_security_group_rule" "mysql_shipping" {
   source_security_group_id = module.shipping.sg_id
   security_group_id = module.mysql.sg_id
 }
+
 # Rabbit MQ
 resource "aws_security_group_rule" "rabbitmq_vpn" {
   count = length(var.rabbitmq_ports_vpn)
@@ -253,6 +271,7 @@ resource "aws_security_group_rule" "rabbitmq_vpn" {
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.rabbitmq.sg_id
 }
+
 resource "aws_security_group_rule" "rabbitmq_bastion" {
   count = length(var.rabbitmq_ports_vpn)
   type              = "ingress"
@@ -271,6 +290,7 @@ resource "aws_security_group_rule" "rabbitmq_payment" {
   source_security_group_id = module.payment.sg_id
   security_group_id = module.rabbitmq.sg_id
 }
+
 resource "aws_security_group_rule" "catalogue_vpn_ssh" {
   type              = "ingress"
   from_port         = 22
@@ -288,6 +308,7 @@ resource "aws_security_group_rule" "catalogue_bastion_ssh" {
   source_security_group_id = module.bastion.sg_id
   security_group_id = module.catalogue.sg_id
 }
+
 resource "aws_security_group_rule" "catalogue_vpn_http" {
   type              = "ingress"
   from_port         = 8080
@@ -296,6 +317,7 @@ resource "aws_security_group_rule" "catalogue_vpn_http" {
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.catalogue.sg_id
 }
+
 resource "aws_security_group_rule" "catalogue_backend_alb" {
   type              = "ingress"
   from_port         = 8080
@@ -304,6 +326,7 @@ resource "aws_security_group_rule" "catalogue_backend_alb" {
   source_security_group_id = module.backend_alb.sg_id
   security_group_id = module.catalogue.sg_id
 }
+
 #User
 resource "aws_security_group_rule" "user_vpn_ssh" {
   type              = "ingress"
