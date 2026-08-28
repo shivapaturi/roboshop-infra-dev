@@ -1,5 +1,5 @@
 resource "aws_lb_target_group" "catalogue" {
-  name     = "${var.project}-${var.environment}-catalogue" # roboshop-dev-catalogue
+  name     = "${var.project}-${var.environment}-catalogue" #roboshop-dev-catalogue
   port     = 8080
   protocol = "HTTP"
   vpc_id   = local.vpc_id
@@ -7,7 +7,7 @@ resource "aws_lb_target_group" "catalogue" {
   health_check {
     healthy_threshold = 2
     interval = 5
-    matcher =  "200-299"
+    matcher = "200-299"
     path = "/health"
     port = 8080
     timeout = 2
@@ -19,8 +19,8 @@ resource "aws_instance" "catalogue" {
   ami           = local.ami_id
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.catalogue_sg_id]
-  subnet_id   = local.private_subnet_id
-  #iam_instance_profile = "EC2RoleToFetchSSMParams" # IAM created role name
+  subnet_id = local.private_subnet_id
+  #iam_instance_profile = "EC2RoleToFetchSSMParams"
   tags = merge(
     local.common_tags,
     {
@@ -35,9 +35,9 @@ resource "terraform_data" "catalogue" {
   ]
   
   provisioner "file" {
-  source = "catalogue.sh"
-  destination = "/tmp/catalogue.sh"
-}
+    source      = "catalogue.sh"
+    destination = "/tmp/catalogue.sh"
+  }
 
   connection {
     type     = "ssh"
@@ -46,17 +46,17 @@ resource "terraform_data" "catalogue" {
     host     = aws_instance.catalogue.private_ip
   }
 
-    provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/catalogue.sh",
       "sudo sh /tmp/catalogue.sh catalogue ${var.environment}"
     ]
   }
-} 
+}
 
 resource "aws_ec2_instance_state" "catalogue" {
   instance_id = aws_instance.catalogue.id
-  state = "stopped"
+  state       = "stopped"
   depends_on = [terraform_data.catalogue]
 }
 
@@ -71,18 +71,19 @@ resource "aws_ami_from_instance" "catalogue" {
     }
   )
 }
- 
- resource "terraform_data" "catalogue_delete" {
+
+resource "terraform_data" "catalogue_delete" {
   triggers_replace = [
     aws_instance.catalogue.id
   ]
-
+  
   # make sure you have aws configure in your laptop
   provisioner "local-exec" {
     command = "aws ec2 terminate-instances --instance-ids ${aws_instance.catalogue.id}"
   }
+
   depends_on = [aws_ami_from_instance.catalogue]
-} 
+}
 
 resource "aws_launch_template" "catalogue" {
   name = "${var.project}-${var.environment}-catalogue"
@@ -91,10 +92,10 @@ resource "aws_launch_template" "catalogue" {
   instance_initiated_shutdown_behavior = "terminate"
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.catalogue_sg_id]
-  update_default_version = true # each time you update, new version will become default 
+  update_default_version = true # each time you update, new version will become default
   tag_specifications {
     resource_type = "instance"
-# Ec2 tags created by ASG
+    # EC2 tags created by ASG
     tags = merge(
       local.common_tags,
       {
@@ -103,7 +104,7 @@ resource "aws_launch_template" "catalogue" {
     )
   }
 
-# volume tags created by ASG
+  # volume tags created by ASG
   tag_specifications {
     resource_type = "volume"
 
@@ -115,42 +116,43 @@ resource "aws_launch_template" "catalogue" {
     )
   }
 
-  # Launch template tags
+  # launch template tags
   tags = merge(
       local.common_tags,
       {
         Name = "${var.project}-${var.environment}-catalogue"
       }
-    )
+  )
+
 }
 
 resource "aws_autoscaling_group" "catalogue" {
-  name               = "${var.project}-${var.environment}-catalogue"
+  name                 = "${var.project}-${var.environment}-catalogue"
   desired_capacity   = 1
   max_size           = 10
   min_size           = 1
-  target_group_arns  = [aws_lb_target_group.catalogue.arn]
-  vpc_zone_identifier = local.private_subnet_ids
+  target_group_arns = [aws_lb_target_group.catalogue.arn]
+  vpc_zone_identifier  = local.private_subnet_ids
   health_check_grace_period = 90
   health_check_type         = "ELB"
+
   launch_template {
     id      = aws_launch_template.catalogue.id
     version = aws_launch_template.catalogue.latest_version
   }
 
   dynamic "tag" {
-    for_each = merge (
+    for_each = merge(
       local.common_tags,
       {
         Name = "${var.project}-${var.environment}-catalogue"
       }
     )
-    content {
+    content{
       key                 = tag.key
       value               = tag.value
       propagate_at_launch = true
     }
-    
     
   }
 
@@ -161,8 +163,9 @@ resource "aws_autoscaling_group" "catalogue" {
     }
     triggers = ["launch_template"]
   }
-  timeouts {
-      delete = "15m"
+
+  timeouts{
+    delete = "15m"
   }
 }
 
@@ -170,7 +173,6 @@ resource "aws_autoscaling_policy" "catalogue" {
   name                   = "${var.project}-${var.environment}-catalogue"
   autoscaling_group_name = aws_autoscaling_group.catalogue.name
   policy_type            = "TargetTrackingScaling"
-  cooldown               = 120
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
@@ -191,7 +193,7 @@ resource "aws_lb_listener_rule" "catalogue" {
 
   condition {
     host_header {
-      values = ["catalogue.backend-${var.environment}-${var.zone_name}"]
+      values = ["catalogue.backend-${var.environment}.${var.zone_name}"]
     }
   }
 }
