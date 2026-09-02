@@ -3,6 +3,12 @@ resource "aws_instance" "bastion" {
   instance_type = "t3.micro"
   vpc_security_group_ids = [local.bastion_sg_id]
   subnet_id   = local.public_subnet_id
+
+  # Need more memory for terraform
+  root_block_device {
+    volume_size = 50
+    volume_type = "gp3" # "gp2" , depending on your preference
+  }
   tags = merge(
     local.common_tags,
     {
