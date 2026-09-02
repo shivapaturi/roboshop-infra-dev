@@ -163,7 +163,6 @@ resource "aws_security_group_rule" "mongodb_vpn" {
   source_security_group_id = module.vpn.sg_id
   security_group_id = module.mongodb.sg_id
 }
-
 resource "aws_security_group_rule" "mongodb_bastion" {
   count = length(var.mongodb_ports_vpn)
   type              = "ingress"
@@ -250,7 +249,7 @@ resource "aws_security_group_rule" "mysql_bastion" {
   protocol          = "tcp"
   source_security_group_id = module.bastion.sg_id
   security_group_id = module.mysql.sg_id
-}
+} 
 
 resource "aws_security_group_rule" "mysql_shipping" {
   type              = "ingress"
@@ -279,7 +278,7 @@ resource "aws_security_group_rule" "rabbitmq_bastion" {
   to_port           = var.rabbitmq_ports_vpn[count.index]
   protocol          = "tcp"
   source_security_group_id = module.bastion.sg_id
-  security_group_id = module.rabbitmq.sg_id
+  security_group_id = module.rabbitmq.sg_id 
 }
 
 resource "aws_security_group_rule" "rabbitmq_payment" {
